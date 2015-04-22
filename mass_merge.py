@@ -57,7 +57,7 @@ def make_groups(rep1,rep2,rep3):
 
 def organize_write(dic, outfile):
 	"""organize the dictionary returned by make_groups and write it to 
-	a fine"""
+	a file"""
 	#print(dic)
 	t=""
 	temp=["0\t","0\t","0\n"]
@@ -73,10 +73,11 @@ def organize_write(dic, outfile):
 				temp[2]=el[1:]+"\n"
 		for i in temp:
 			t+=i
-			#print(str(key)"\t"+t)
+		print(str(key))
 		out.write(str(key)+"\t")
 		out.write(t)
 		temp=["0\t","0\t","0\n"]
+		t=""
 	out.close()
 	
 		
