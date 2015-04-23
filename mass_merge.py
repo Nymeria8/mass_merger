@@ -1,5 +1,13 @@
+#!/usr/bin/env python
+#uses 3 replicates of tab delimited files of mass and intensity and
+#organize it by categories placed by the minor values plus error
+#usage: python mass_merge.py replicate1 replicate2 replicate3 outputfile
+
+#make_groups and organize_write can be improved
+
 from sys import argv
 from collections import OrderedDict
+
 
 def read_replicate(infile, ch):
 	"""read the replicate file and return it in a ordered dic in the
@@ -20,7 +28,7 @@ def error_calc(theoric_mass):
 	compare=theoric_mass+errorr
 	return compare
 
-def make_groups(rep1,rep2,rep3):
+def make_groups(rep1,rep2,rep3):#change to acept a variable number of replicates
 	"""iterate by the lists and make sets by the compare value from
 	error_calc. returns a dictionary with the mean value and the intensity
 	from each replicate"""
@@ -34,6 +42,7 @@ def make_groups(rep1,rep2,rep3):
 	la+=repl3.keys()
 	l=list(set(la))
 	l.sort()
+	last=l[-1]
 	for el in l:
 		if not temp:
 			compare=error_calc(el)
@@ -41,24 +50,24 @@ def make_groups(rep1,rep2,rep3):
 		else:
 			if el<compare:
 				temp.append(el)
-			else:
+			if el > compare or el==last:
 				mean=sum(temp)/float(len(temp))
 				final[mean]=[]
 				for g in temp:
 					if g in repl1:
 						final[mean].append(repl1[g])
-					elif g in repl2:
+					if g in repl2:
 						final[mean].append(repl2[g])
-					elif g in repl3:
+					if g in repl3:
 						final[mean].append(repl3[g])
 				temp=[]				
 				compare=error_calc(el)
+				temp=[el]
 	return final
 
 def organize_write(dic, outfile):
 	"""organize the dictionary returned by make_groups and write it to 
 	a file"""
-	#print(dic)
 	t=""
 	temp=["0\t","0\t","0\n"]
 	out=open(outfile,"w")
@@ -73,7 +82,6 @@ def organize_write(dic, outfile):
 				temp[2]=el[1:]+"\n"
 		for i in temp:
 			t+=i
-		print(str(key))
 		out.write(str(key)+"\t")
 		out.write(t)
 		temp=["0\t","0\t","0\n"]
